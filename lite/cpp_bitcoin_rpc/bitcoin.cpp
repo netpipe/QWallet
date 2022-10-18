@@ -291,6 +291,59 @@ void client::setaccount( const std::string& address, const std::string& account 
     my->request(ss.str());
 }
 
+void client::createrawtransaction( const std::string& address, const std::string& account )
+{
+
+//https://stackoverflow.com/questions/38493893/heres-how-to-send-raw-transaction-btc-using-bitcoin-cli-command
+    //<hexstring> [{"txid":txid,"vout":n,"scriptPubKey":hex},...] [<privatekey1>,...]
+    // bitcoin-cli -regtest createrawtransaction
+
+//    bitcoin-cli -regtest signrawtransaction "0200000001a1c33ebb12d94f96effc70c9dd4488faf32dc15269d6a41d115ac956033cadbb0100000000ffffffff0100e1f505000000001976a9145768a869521bb01af8bdd787e6e1e65ec3d9870e88ac00000000" '''
+//            [
+//              {
+//                "txid":"bba4d66952c12df3fa8844ddc970fcef964fd912bb3ec3a1",
+//                "vout":1,
+//                "scriptPubKey":"a91401a8f0509da2396f58d3f9948a76331964524c9687",
+//                "redeemScript": "5221022d6f957dd76773432d2493edb5601b2d0791286e31c83483ab299672c3d44fc921022dd9c36eece99cc308986a8334c3a0bf24d7ef8b842dacebf56f2477b0f6daab21030544c9613bf27c9773e6fcd79c7786a297188a2647d346da0c3305e22d3e28da53ae"
+//              }
+//            ]
+//        ''' '''
+//        [
+//        "cUdhE3NvePyjqksgJTc5BQfXGDJckPgEKfoRT72x2BRoG2uMS81H"
+//        ]
+//        '''
+
+
+   // bitcoin-cli -regtest sendrawtransaction $signed_raw_txn
+
+    std::stringstream ss;
+    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"setaccount\", \"params\": [";
+        ss << "\""<<address<<"\",";
+        ss << "\""<<account<<"\"";
+    ss << "] }";
+    my->request(ss.str());
+}
+
+void client::signrawtransaction( const std::string& address, const std::string& account )
+{
+    std::stringstream ss;
+    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"setaccount\", \"params\": [";
+        ss << "\""<<address<<"\",";
+        ss << "\""<<account<<"\"";
+    ss << "] }";
+    my->request(ss.str());
+}
+
+void client::sendrawtransaction( const std::string& address, const std::string& account )
+{
+    std::stringstream ss;
+    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"setaccount\", \"params\": [";
+        ss << "\""<<address<<"\",";
+        ss << "\""<<account<<"\"";
+    ss << "] }";
+    my->request(ss.str());
+}
+
 std::vector<std::string> client::getaddressesbyaccount( const std::string& account )
 {
     std::stringstream ss;

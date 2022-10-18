@@ -57,7 +57,9 @@ class client
         uint64_t                  getreceivedbyaddress( const std::string& address, uint32_t minconf = 1 );
         uint64_t                  getreceivedbyaccount( const std::string& account, uint32_t minconf = 1 );
 
-
+       void createrawtransaction( const std::string& address, const std::string& account );
+void signrawtransaction( const std::string& address, const std::string& account );
+void sendrawtransaction( const std::string& address, const std::string& account );
 
 
         std::string  getnewaddress( const std::string& account = "" );
