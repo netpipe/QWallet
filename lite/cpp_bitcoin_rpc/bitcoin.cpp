@@ -327,7 +327,7 @@ void client::createrawtransaction( const std::string& address, const std::string
 void client::signrawtransaction( const std::string& address, const std::string& account )
 {
     std::stringstream ss;
-    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"setaccount\", \"params\": [";
+    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"signrawtransaction\", \"params\": [";
         ss << "\""<<address<<"\",";
         ss << "\""<<account<<"\"";
     ss << "] }";
@@ -337,7 +337,7 @@ void client::signrawtransaction( const std::string& address, const std::string& 
 void client::sendrawtransaction( const std::string& address, const std::string& account )
 {
     std::stringstream ss;
-    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"setaccount\", \"params\": [";
+    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"sendrawtransaction\", \"params\": [";
         ss << "\""<<address<<"\",";
         ss << "\""<<account<<"\"";
     ss << "] }";
