@@ -7,6 +7,10 @@
 #include "crypto/Uint256.hpp"
 #include "address.h"
 #include "QJsonObject"
+#include "qdebug.h"
+#include <QJsonDocument>
+#include <QFile>
+#include <QJsonObject>
 
 //https://www.blockchain.com/explorer/api/blockchain_api
 //
@@ -15,6 +19,30 @@
 //https://www.blockchain.com/explorer/api/blockchain_api
 //https://doc.qt.io/qt-5/qtcore-serialization-savegame-example.html
 
+//https://www.weiy.city/2020/08/how-to-write-and-read-json-file-by-qt/
+//https://dogechain.info/api/v1/pushtx?tx=hashvalue
+//https://chain.so/api/#get-prices
+
+//curl https://chain.so/api/v2/get_tx_unspent/DOGE/DRapidDiBYggT1zdrELnVhNDqyAHn89cRi/e83d147c3bcd87c6efd5270896a179f6ecb1de8b8c8cc324645c5a14129baf8c
+
+//{
+//  "status": "success",
+//  "data": {
+//    "network": "DOGE",
+//    "address": "DRapidDiBYggT1zdrELnVhNDqyAHn89cRi",
+//    "txs": [
+//      {
+//        "txid": "9d80667769d23fd9d5e29903dc821961ccbe7de0db14e2dae9fa6d809c86b779",
+//        "output_no": 0,
+//        "script_asm": "OP_DUP OP_HASH160 e0401fae9ec7f860ceefd71b17205d219f55f283 OP_EQUALVERIFY OP_CHECKSIG",
+//        "script_hex": "76a914e0401fae9ec7f860ceefd71b17205d219f55f28388ac",
+//        "value": "90.0",
+//        "confirmations": 136204,
+//        "time": 1402655577
+//      }
+//    ]
+//  }
+//}
 
 QJsonObject * test = new QJsonObject();
 //FirstName
@@ -162,6 +190,42 @@ MainWindow::MainWindow(QWidget *parent)
     testEcdsaSignAndVerify();
     testEcdsaVerify();
         std::printf("All %d test cases passed\n", numTestCases);
+
+
+     //   QJsonObject jsonObj ;
+QJsonObject content;
+         QJsonDocument document;
+         document.setObject( content );
+         QFile file( "test.test" );
+
+         QString mName;
+
+
+
+
+
+        if( file.open( QIODevice::ReadOnly ) )
+        {
+            QByteArray bytes = file.readAll();
+            file.close();
+
+            QJsonParseError jsonError;
+            QJsonDocument document = QJsonDocument::fromJson( bytes, &jsonError );
+            if( jsonError.error != QJsonParseError::NoError )
+            {
+                qDebug() << "fromJson failed: " ;//<< jsonError.errorString().toStdString() << endl;
+                return ;
+            }
+            if( document.isObject() )
+            {
+                QJsonObject jsonObj = document.object();
+                if (jsonObj.contains("FirstName") && jsonObj["FirstName"].isString())
+                    mName = jsonObj["FirstName"].toString();
+
+                qDebug() << mName.toLatin1() << "test";
+            }
+         }
+
 }
 
 MainWindow::~MainWindow()
