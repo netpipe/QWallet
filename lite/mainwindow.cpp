@@ -6,6 +6,41 @@
 #include "crypto/Sha256Hash.hpp"
 #include "crypto/Uint256.hpp"
 #include "address.h"
+#include "QJsonObject"
+
+//https://www.blockchain.com/explorer/api/blockchain_api
+//
+//https://github.com/Neyoui/DogeChainAPI
+//https://dogechain.info/api/blockchain_api
+//https://www.blockchain.com/explorer/api/blockchain_api
+//https://doc.qt.io/qt-5/qtcore-serialization-savegame-example.html
+
+
+QJsonObject * test = new QJsonObject();
+//FirstName
+
+//void Character::read(const QJsonObject &json)
+//{
+//    if (json.contains("name") && json["name"].isString())
+//        mName = json["name"].toString();
+
+//    if (json.contains("level") && json["level"].isDouble())
+//        mLevel = json["level"].toInt();
+
+//    if (json.contains("classType") && json["classType"].isDouble())
+//        mClassType = ClassType(json["classType"].toInt());
+//}
+
+//void Character::write(QJsonObject &json) const
+//{
+//    json["name"] = mName;
+//    json["level"] = mLevel;
+//    json["classType"] = mClassType;
+//}
+//void read(const QJsonObject &json);
+//void write(QJsonObject &json) const;
+
+
 
 
 static int numTestCases = 0;
@@ -126,7 +161,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     testEcdsaSignAndVerify();
     testEcdsaVerify();
-   // 	std::printf("All %d test cases passed\n", numTestCases);
+        std::printf("All %d test cases passed\n", numTestCases);
 }
 
 MainWindow::~MainWindow()
