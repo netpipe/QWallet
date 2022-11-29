@@ -13,6 +13,22 @@
 #include <QJsonObject>
 #include "cpp_bitcoin_rpc/bitcoin.hpp"
 
+#include <QMessageBox>
+
+//https://www.blockchain.com/explorer/api/blockchain_api
+//
+//https://github.com/Neyoui/DogeChainAPI
+//https://dogechain.info/api/blockchain_api
+//https://www.blockchain.com/explorer/api/blockchain_api
+//https://doc.qt.io/qt-5/qtcore-serialization-savegame-example.html
+
+//https://www.weiy.city/2020/08/how-to-write-and-read-json-file-by-qt/
+//https://dogechain.info/api/v1/pushtx?tx=hashvalue
+//https://chain.so/api/#get-prices
+
+//curl https://chain.so/api/v2/get_tx_unspent/DOGE/DRapidDiBYggT1zdrELnVhNDqyAHn89cRi/e83d147c3bcd87c6efd5270896a179f6ecb1de8b8c8cc324645c5a14129baf8c
+
+
 static int numTestCases = 0;
 
 static void testEcdsaSignAndVerify()
@@ -231,16 +247,16 @@ void MainWindow::on_tosendbrt_clicked()
 
 
 
-    printf("Send Transaction Result: %s\n", res);
-        if(ui->select_type->currentText() == "dogecoin")
-    {
+//    printf("Send Transaction Result: %s\n", res);
+//        if(ui->select_type->currentText() == "dogecoin")
+//    {
         getTransactionCommand_doge("bcc4ce3f004b02b50456976dfc4de69d651ba718ce95422f51cd1d4bf7235abb");
-    }
-    else if(ui->select_type->currentText() == "bitcoin")
-    {
-        getTransactionCommand_bit("bcc4ce3f004b02b50456976dfc4de69d651ba718ce95422f51cd1d4bf7235abb");
-    }
-    else
+//    }
+//    else if(ui->select_type->currentText() == "bitcoin")
+//    {
+ //       getTransactionCommand_bit("bcc4ce3f004b02b50456976dfc4de69d651ba718ce95422f51cd1d4bf7235abb");
+//    }
+//    else
     
 }
 
@@ -279,6 +295,15 @@ void MainWindow::getTransactionFinish(QNetworkReply *rep)
     QMessageBox::information(this, "Get Transcation", str, "ok");
 }
 
+
+//bool client::settxfee( const std::string& fee_value)
+//{
+//    std::stringstream ss;
+//    ss << "{\"jsonrpc\": \"1.0\", \"id\":\"1\", \"method\": \"settxfee\", \"params\": [";
+//    ss << fee_value;
+//    ss << "] }";
+//    return my->request(ss.str()).get<std::string>("result")=="true";
+//}
 
 
 
