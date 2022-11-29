@@ -16,11 +16,19 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public:
+    void getTransactionCommand_doge(std::string transaction_str);
+    void getTransactionCommand_bit(std::string transaction_str);
+    
 private slots:
     void on_actionExit_triggered();
+    void on_tosendbrt_clicked();
 
     void showMessage();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+        void getTransactionFinish(QNetworkReply *rep);
+    
+
 private:
     Ui::MainWindow *ui;
 };

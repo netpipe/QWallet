@@ -31,8 +31,9 @@ int generateAddress() {
     unsigned char address[64];
     unsigned char priv_key[64];
 
-    if (create_address_from_string(message, address, priv_key, true, false, NULL) == 1) {
-		printf("address: %s\n", address);
+    if (create_address_from_string(message, address, priv_key, true, false, NULL) == 1)
+    {
+        printf("address: %s\n", address);
 		printf("private key: %s\n", priv_key);
 		return 0;
 	}

@@ -11,72 +11,15 @@
 #include <QJsonDocument>
 #include <QFile>
 #include <QJsonObject>
-
-//https://www.blockchain.com/explorer/api/blockchain_api
-//
-//https://github.com/Neyoui/DogeChainAPI
-//https://dogechain.info/api/blockchain_api
-//https://www.blockchain.com/explorer/api/blockchain_api
-//https://doc.qt.io/qt-5/qtcore-serialization-savegame-example.html
-
-//https://www.weiy.city/2020/08/how-to-write-and-read-json-file-by-qt/
-//https://dogechain.info/api/v1/pushtx?tx=hashvalue
-//https://chain.so/api/#get-prices
-
-//curl https://chain.so/api/v2/get_tx_unspent/DOGE/DRapidDiBYggT1zdrELnVhNDqyAHn89cRi/e83d147c3bcd87c6efd5270896a179f6ecb1de8b8c8cc324645c5a14129baf8c
-
-//{
-//  "status": "success",
-//  "data": {
-//    "network": "DOGE",
-//    "address": "DRapidDiBYggT1zdrELnVhNDqyAHn89cRi",
-//    "txs": [
-//      {
-//        "txid": "9d80667769d23fd9d5e29903dc821961ccbe7de0db14e2dae9fa6d809c86b779",
-//        "output_no": 0,
-//        "script_asm": "OP_DUP OP_HASH160 e0401fae9ec7f860ceefd71b17205d219f55f283 OP_EQUALVERIFY OP_CHECKSIG",
-//        "script_hex": "76a914e0401fae9ec7f860ceefd71b17205d219f55f28388ac",
-//        "value": "90.0",
-//        "confirmations": 136204,
-//        "time": 1402655577
-//      }
-//    ]
-//  }
-//}
-
-QJsonObject * test = new QJsonObject();
-//FirstName
-
-//void Character::read(const QJsonObject &json)
-//{
-//    if (json.contains("name") && json["name"].isString())
-//        mName = json["name"].toString();
-
-//    if (json.contains("level") && json["level"].isDouble())
-//        mLevel = json["level"].toInt();
-
-//    if (json.contains("classType") && json["classType"].isDouble())
-//        mClassType = ClassType(json["classType"].toInt());
-//}
-
-//void Character::write(QJsonObject &json) const
-//{
-//    json["name"] = mName;
-//    json["level"] = mLevel;
-//    json["classType"] = mClassType;
-//}
-//void read(const QJsonObject &json);
-//void write(QJsonObject &json) const;
-
-
-
+#include "cpp_bitcoin_rpc/bitcoin.hpp"
 
 static int numTestCases = 0;
 
-
-static void testEcdsaSignAndVerify() {
+static void testEcdsaSignAndVerify()
+{
     // Define test cases
-    struct SignCase {
+    struct SignCase
+    {
         bool matches;
         const char *privateKey;
         const char *msgHash;  // Byte-reversed
@@ -84,7 +27,9 @@ static void testEcdsaSignAndVerify() {
         const char *expectedR;
         const char *expectedS;
     };
-    const vector<SignCase> cases{
+
+    const vector<SignCase> cases
+    {
         // Hand-crafted cases
         {true, "0000000000000000000000000000000000000000000000000000000000000123",
         "8900000000000000000000000000000000000000000000000000000000000000",
@@ -104,7 +49,8 @@ static void testEcdsaSignAndVerify() {
     };
 
     // Test runner
-    for (const SignCase &tc : cases) {
+    for (const SignCase &tc : cases)
+    {
         Uint256 privateKey(tc.privateKey);
         const Sha256Hash msgHash(tc.msgHash);
         Uint256 expectedR(tc.expectedR);
@@ -112,16 +58,19 @@ static void testEcdsaSignAndVerify() {
 
         Uint256 r, s;
         bool ok;
-        if (tc.nonce != nullptr) {
+        if (tc.nonce != nullptr)
+        {
             Uint256 nonce(tc.nonce);
             ok = Ecdsa::sign(privateKey, msgHash, nonce, r, s);
-        } else {
+        } else
+        {
             ok = Ecdsa::signWithHmacNonce(privateKey, msgHash, r, s);
         }
         bool actualMatch = r == expectedR && s == expectedS;
         assert(ok && actualMatch == tc.matches);
 
-        if (Uint256::ZERO < privateKey && privateKey < CurvePoint::ORDER) {
+        if (Uint256::ZERO < privateKey && privateKey < CurvePoint::ORDER)
+        {
             CurvePoint publicKey = CurvePoint::privateExponentToPublicPoint(privateKey);
             assert(Ecdsa::verify(publicKey, msgHash, r, s));
         }
@@ -130,8 +79,10 @@ static void testEcdsaSignAndVerify() {
     }
 }
 
-static void testEcdsaVerify() {
-    struct VerifyCase {
+static void testEcdsaVerify()
+{
+    struct VerifyCase
+    {
         bool answer;
         const char *pubPointX;
         const char *pubPointY;
@@ -139,7 +90,9 @@ static void testEcdsaVerify() {
         const char *rValue;
         const char *sValue;
     };
-    const vector<VerifyCase> cases{
+
+    const vector<VerifyCase> cases
+    {
         {false, "77D9ECB1D22A45C107EE36FC6D62A4D32BAB6689A50F0FAE587E0B95A795E833",
         "9BB5CF3051C7FCD5B69CB80A59B052D75BB6C6090B28C1E5AC0C6502B04BE63B",
         "EF54D03E7453CED1A0A9529ADFBE46CE7440E40E3457CA1C040B6CAC9E3209E4",
@@ -147,7 +100,8 @@ static void testEcdsaVerify() {
         "08F4E06799E5919F72EE39D3473EB473BD8ADC672694D895734E8AE4D049E038"},
     };
 
-    for (const VerifyCase &tc : cases) {
+    for (const VerifyCase &tc : cases)
+    {
         CurvePoint publicKey(tc.pubPointX, tc.pubPointY);
         const Sha256Hash msgHash(tc.msgHash);
         Uint256 r(tc.rValue);
@@ -156,8 +110,6 @@ static void testEcdsaVerify() {
         numTestCases++;
     }
 }
-
-
 
 QSystemTrayIcon *trayIcon;
 QMenu *trayIconMenu;
@@ -181,51 +133,45 @@ MainWindow::MainWindow(QWidget *parent)
     trayIconMenu->addAction( quit_action );
 
     trayIcon->setContextMenu( trayIconMenu);
-    trayIcon->setVisible(true);
     //trayIcon->showMessage("Test Message", "Text", QSystemTrayIcon::Information, 1000);
+    trayIcon->setVisible(true);
     //trayIcon->show();
 
     generateAddress();
 
     testEcdsaSignAndVerify();
     testEcdsaVerify();
-        std::printf("All %d test cases passed\n", numTestCases);
+    std::printf("All %d test cases passed\n", numTestCases);
 
 
-     //   QJsonObject jsonObj ;
-QJsonObject content;
-         QJsonDocument document;
-         document.setObject( content );
-         QFile file( "test.test" );
+    //   QJsonObject jsonObj ;
+    QJsonObject content;
+    QJsonDocument document;
+    document.setObject( content );
+    QFile file( "test.test" );
 
-         QString mName;
+    QString mName;
 
+    if( file.open( QIODevice::ReadOnly ) )
+    {
+        QByteArray bytes = file.readAll();
+        file.close();
 
-
-
-
-        if( file.open( QIODevice::ReadOnly ) )
+        QJsonParseError jsonError;
+        QJsonDocument document = QJsonDocument::fromJson( bytes, &jsonError );
+        if( jsonError.error != QJsonParseError::NoError )
         {
-            QByteArray bytes = file.readAll();
-            file.close();
-
-            QJsonParseError jsonError;
-            QJsonDocument document = QJsonDocument::fromJson( bytes, &jsonError );
-            if( jsonError.error != QJsonParseError::NoError )
-            {
-                qDebug() << "fromJson failed: " ;//<< jsonError.errorString().toStdString() << endl;
-                return ;
-            }
-            if( document.isObject() )
-            {
-                QJsonObject jsonObj = document.object();
-                if (jsonObj.contains("FirstName") && jsonObj["FirstName"].isString())
-                    mName = jsonObj["FirstName"].toString();
-
-                qDebug() << mName.toLatin1() << "test";
-            }
-         }
-
+            qDebug() << "fromJson failed: " ;//<< jsonError.errorString().toStdString() << endl;
+            return ;
+        }
+        if( document.isObject() )
+        {
+            QJsonObject jsonObj = document.object();
+            if (jsonObj.contains("FirstName") && jsonObj["FirstName"].isString())
+            mName = jsonObj["FirstName"].toString();
+            qDebug() << mName.toLatin1() << "test";
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -262,4 +208,85 @@ void MainWindow::showMessage()
     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::MessageIcon();
     trayIcon->showMessage(tr("QSatisfy"), tr("Will you smoke now..."), icon, 100);
 }
+
+void MainWindow::on_tosendbrt_clicked()
+{
+    boost::asio::io_service ioservice;
+
+    bitcoin::client m_client(ioservice);
+    bool bconnect = m_client.connect("http://localhost:8545", "user", "pass");
+    //if( !bconnect ) return;
+
+    std::string transaction = m_client.createrawtransaction("[{\"txid\":\"e6da89de7a6b8508ce8f371a3d0535b04b5e108cb1a6e9284602d3bfd357c018\",\"vout\":1}]",
+                                  "{\"13cgrTP7wgbZYWrY9BZ22BV6p82QXQT3nY\": 0.49213337}");
+
+    bool bsign = m_client.signrawtransaction(transaction);
+
+    if(bsign)
+        printf("Transaction Sign Successful.\n");
+    else
+        printf("Transaction Sign Successful.\n");
+
+    std::string res = m_client.sendrawtransaction(transaction);
+
+
+
+    printf("Send Transaction Result: %s\n", res);
+        if(ui->select_type->currentText() == "dogecoin")
+    {
+        getTransactionCommand_doge("bcc4ce3f004b02b50456976dfc4de69d651ba718ce95422f51cd1d4bf7235abb");
+    }
+    else if(ui->select_type->currentText() == "bitcoin")
+    {
+        getTransactionCommand_bit("bcc4ce3f004b02b50456976dfc4de69d651ba718ce95422f51cd1d4bf7235abb");
+    }
+    else
+    
+}
+
+void MainWindow::getTransactionCommand_doge(std::string transaction_str)
+{
+    QNetworkAccessManager * mgr = new QNetworkAccessManager(this);
+    connect(mgr,SIGNAL(finished(QNetworkReply*)), this, SLOT(getTransactionFinish(QNetworkReply*)));
+
+    QString url_path ="https://dogechain.info/api/v1/transaction/";
+    url_path += QString::fromLatin1(transaction_str.c_str());
+
+    QUrl url(url_path);
+    QNetworkRequest request(url);
+
+    mgr->get(request);
+}
+
+void MainWindow::getTransactionCommand_bit(std::string transaction_str)
+{
+    QNetworkAccessManager * mgr = new QNetworkAccessManager(this);
+    connect(mgr,SIGNAL(finished(QNetworkReply*)), this, SLOT(getTransactionFinish(QNetworkReply*)));
+
+    QString url_path = "https://chain.so/api/v2/get_tx_inputs/DOGE/";//"https://dogechain.info/api/v1/transaction/";
+    url_path += QString::fromLatin1(transaction_str.c_str());
+
+    QUrl url(url_path);
+    QNetworkRequest request(url);
+
+    mgr->get(request);
+}
+
+void MainWindow::getTransactionFinish(QNetworkReply *rep)
+{
+    QByteArray bts = rep->readAll();
+    QString str(bts);
+    QMessageBox::information(this, "Get Transcation", str, "ok");
+}
+
+
+
+
+
+
+
+
+
+
+
 

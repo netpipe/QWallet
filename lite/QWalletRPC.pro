@@ -54,6 +54,7 @@ HEADERS += \
     crypto/Uint256.hpp \
     crypto/Utils.hpp \
     crypto/x8664/AsmX8664.hpp \
+    database.h \
     mainwindow.h
 
 FORMS += \
